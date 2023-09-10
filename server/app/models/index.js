@@ -19,4 +19,13 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
+db.users = require("./user.model.js")(sequelize, Sequelize);
+db.logs = require("./log.model.js")(sequelize, Sequelize);
+
+// create a one to many relationship
+db.users.hasMany(db.logs, {
+    foreignKey: 'userId'
+});
+db.logs.belongsTo(db.users);
+
 module.exports = db;
