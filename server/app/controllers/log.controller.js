@@ -35,11 +35,35 @@ exports.create = (req, res) => {
 };
 
 // Retrieve all logs from the database.
-exports.findAll = (req, res) => {
+exports.findAllLogs = (req, res) => {
     const userId = req.query.userId;
     var condition = userId ? { userId: userId } : null;
 
     Log.findAll({ where: condition })
+        .then(data => {
+            res.send(data);
+        })
+        .catch(err => {
+            res.status(500).send({
+                message:
+                    err.message || "Some error occurred while retrieving logs."
+            });
+        });
+};
+
+// Retrieve all user and their logs from the database.
+exports.findAll = (req, res) => {
+    const userId = req.query.userId;
+    var condition = userId ? { userId: userId } : null;
+
+    User.findAll({
+        attributes: ['id', 'firstName', "lastName"],
+        include: [{
+            model: Log,
+            attributes: ['userId', 'description', 'timeStart', 'timeEnd'],
+        }],
+        where: condition,
+    })
         .then(data => {
             res.send(data);
         })
